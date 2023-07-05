@@ -2,7 +2,6 @@ package org.example.calc;
 
 import org.example.Result;
 import org.example.calc.stackcalc.StackCalc;
-import org.example.calc.tokenizer.Tokenizer;
 import org.example.calc.tokenizer.tokens.Token;
 import org.example.calc.tokenizer.tokens.Tokens;
 import org.junit.jupiter.api.Test;
@@ -10,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StackCalcTest {
     @Test

@@ -1,59 +1,42 @@
 package org.example.calc.tokenizer.tokens;
 
-import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Map;
-
-import static org.example.calc.tokenizer.tokens.Tokens.TOKENTYPS.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Tokens {
+    private static final Set<Operator> OPERATOR_SET = Arrays.stream(OperatorEnum.values()).map(Operator::new).collect(Collectors.toSet());
+    private static final Map<String, Operator> OPERATOR_MAP = OPERATOR_SET.stream().collect(Collectors.toMap(Operator::getSymbol, x -> x));
 
-    public enum TOKENTYPS {
-        ADD("+"),
-        SUB("-"),
-        MUL("*"),
-        DIV("/"),
-        VALUE("");
-
-        public final String symbol;
-
-        TOKENTYPS(String s) {
-            this.symbol = s;
-        }
+    private Tokens() {
     }
 
-    private static Map<TOKENTYPS, Token> tokens = Map.of(
-            ADD, new Add(),
-            SUB, new Sub(),
-            MUL, new Mul(),
-            DIV, new Div()
-    );
+    public static Set<Operator> getStandard() {
+        return OPERATOR_SET;
+    }
 
-    private Tokens() {};
+    public static Set<Operator> getWithoutPrecedence() {
+        return Arrays.stream(OperatorEnum.values()).map(x -> new Operator(1, x.getSymbol(), x.getAssociativity(), x.getF())).collect(Collectors.toSet());
+    }
 
-    public static Token add() {
-        return getToken(ADD);
+    public static Operator add() {
+        return OPERATOR_MAP.get(OperatorEnum.ADD.getSymbol());
     }
-    public static Token sub() {
-        return getToken(SUB);
-    }    public static Token mul() {
-        return getToken(MUL);
-    }    public static Token div() {
-        return getToken(DIV);
+
+    public static Operator sub() {
+        return OPERATOR_MAP.get(OperatorEnum.SUB.getSymbol());
     }
-    public static Token value(BigDecimal value) {
-        return Value.create(value);
+
+    public static Operator mul() {
+        return OPERATOR_MAP.get(OperatorEnum.MUL.getSymbol());
     }
-    public static Token value(int value) {
-        return Value.create(value);
+
+    public static Operator div() {
+        return OPERATOR_MAP.get(OperatorEnum.DIV.getSymbol());
     }
-    public static Token value(String value) {
-        return Value.create(value);
-    }
+
     public static Token value(double value) {
-        return Value.create(BigDecimal.valueOf(value));
-    }
-
-    private static Token getToken(TOKENTYPS typ){
-        return tokens.get(typ);
+        return Value.create(value);
     }
 }

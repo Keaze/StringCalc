@@ -1,52 +1,65 @@
 package org.example.calc.tokenizer;
 
 import org.example.Result;
+import org.example.calc.tokenizer.tokens.Operator;
 import org.example.calc.tokenizer.tokens.Token;
 import org.example.calc.tokenizer.tokens.Tokens;
 
 import java.util.*;
-
-import static org.example.calc.tokenizer.tokens.Tokens.TOKENTYPS.*;
+import java.util.stream.Collectors;
 
 public class Tokenizer {
-    private String[] symbols;
+
+    public static Set<String> WHITESPACE = Set.of(" ", "   ");
+    public static String POINT = ".";
+    public static String COMMA = ".";
+    private final Map<String, Operator> symbolMap;
     private final Deque<Token> tokens;
-    private Set<String> operators;
-    private Set<String> whitespace;
-    private String delimter;
-    private String decimalPoint;
-    public Tokenizer(){
-        operators= Set.of(ADD.symbol, SUB.symbol, DIV.symbol, MUL.symbol);
-        whitespace= Set.of(" ", "   ");
-        delimter = ",";
-        decimalPoint = ".";
+    private final Set<String> whitespace;
+    private final String decimalPoint;
+    private String[] symbols;
+    private int i;
+
+    public Tokenizer(Set<Operator> operators, Set<String> whitespace, String decimalPoint) {
+        this.symbolMap = operators.stream().collect(Collectors.toMap(Operator::getSymbol, x -> x));
+        this.whitespace = whitespace;
+        this.decimalPoint = decimalPoint;
         i = 0;
         tokens = new LinkedList<>();
     }
 
-    private int i;
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 
-
-
-
-    public Result<Deque<Token>, String> tokenize(String input){
+    public Result<Deque<Token>, String> tokenize(String input) {
         i = 0;
+        tokens.clear();
         this.symbols = input.split("");
         return tokenize();
     }
-    private Result<Deque<Token>, String> tokenize(){
+
+    private Result<Deque<Token>, String> tokenize() {
         try {
-            while(i < symbols.length){
+            while (i < symbols.length) {
                 final String s = symbols[i];
-                if (operators.contains(s)) {
+                if (symbolMap.containsKey(s)) {
                     tokens.add(getToken(s));
                     continue;
                 }
-                if(isNumeric(s)){
+                if (isNumeric(s)) {
                     tokens.add(readNumber());
                     continue;
                 }
-                if(whitespace.contains(s)){
+                if (whitespace.contains(s)) {
                     i++;
                     continue;
                 }
@@ -60,30 +73,31 @@ public class Tokenizer {
 
     private Token readNumber() {
         double value = 0;
-        double multiplyer = 10;
+        double multiplier = 10;
         boolean decimal = false;
-        while(i < symbols.length){
+        while (i < symbols.length) {
             final String s = symbols[i];
-            if(isNumeric(s)){
+            if (isNumeric(s)) {
                 final double temp = Double.parseDouble(s);
-                if(!decimal){
-                    value = (value * multiplyer) + temp;
+                if (!decimal) {
+                    value = (value * multiplier) + temp;
                 } else {
-                    value = value + (temp * multiplyer);
-                    multiplyer *= 0.1;
+                    value = value + (temp * multiplier);
+                    multiplier *= 0.1;
                 }
                 i++;
                 continue;
             }
-            if(Objects.equals(s, decimalPoint)){
-                decimal = true;
-                multiplyer = 0.1;
-                i++;
-                continue;
-            }
-            if(Objects.equals(s, delimter)){
-                i++;
-                continue;
+            if (Objects.equals(s, decimalPoint)) {
+                if (!decimal) {
+                    decimal = true;
+                    multiplier = 0.1;
+                    i++;
+                    continue;
+                } else {
+                    throw new IllegalStateException("Invalid Decimal Point");
+                }
+
             }
             return Tokens.value(value);
         }
@@ -93,25 +107,9 @@ public class Tokenizer {
 
     private Token getToken(String t) {
         i++;
-        return switch (t) {
-            case "+" -> Tokens.add();
-            case "-" -> Tokens.sub();
-            case "*" -> Tokens.mul();
-            case "/" -> Tokens.div();
-            default -> throw new IllegalArgumentException("No such operator " + t);
-        };
-    }
-
-
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
+        if (!symbolMap.containsKey(t)) {
+            throw new IllegalArgumentException("No such operator " + t);
         }
-        try {
-            double d = Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
+        return symbolMap.get(t);
     }
 }

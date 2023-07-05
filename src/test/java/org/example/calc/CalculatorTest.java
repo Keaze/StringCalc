@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorTest {
-    static Calculator calc = new Calculator();
+    static Calculator calc = Calculators.calculatorWithoutPrecedence();
 
     private static Stream<Arguments> provideErrors() {
         return Stream.of(

@@ -2,15 +2,14 @@ package org.example.calc.tokenizer.tokens;
 
 import java.math.BigDecimal;
 
-public class Value extends Token{
+public class Value implements Token {
     private final BigDecimal value;
 
     public BigDecimal getValue() {
         return value;
     }
 
-    private Value(BigDecimal value){
-        super(-1);
+    private Value(BigDecimal value) {
         this.value = value;
     }
 
@@ -35,7 +34,6 @@ public class Value extends Token{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Value value1)) return false;
-        if (!super.equals(o)) return false;
 
         return value.equals(value1.value);
     }

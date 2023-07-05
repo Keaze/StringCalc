@@ -7,18 +7,19 @@ import org.example.calc.transformer.Transformer;
 
 import java.math.BigDecimal;
 
-public class Calculator {
-    private Tokenizer tokenizer;
-    private Transformer transformer;
-    private StackCalc stackCalc;
 
-    public Calculator(){
-        tokenizer = new Tokenizer();
-        transformer = new Transformer();
-        stackCalc = new StackCalc();
+public class Calculator {
+    private final Tokenizer tokenizer;
+    private final Transformer transformer;
+    private final StackCalc stackCalc;
+
+    public Calculator(Tokenizer tokenizer, Transformer transformer, StackCalc stackCalc) {
+        this.tokenizer = tokenizer;
+        this.transformer = transformer;
+        this.stackCalc = stackCalc;
     }
 
-    public Result<BigDecimal, String> calculate(String input){
+    public Result<BigDecimal, String> calculate(String input) {
         return tokenizer.tokenize(input).flatMap(transformer::transform).flatMap(stackCalc::calculate);
     }
 }
