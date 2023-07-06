@@ -29,7 +29,7 @@ public class Transformer {
                 lastTokenValue = true;
             } else if (t instanceof Operator op) {
                 while (op.getPrecedence() <= Optional.ofNullable(operators.peek()).map(Operator::getPrecedence).orElse(-1)) {
-                    final Token op2 = operators.poll();
+                    final Token op2 = operators.removeLast();
                     result.offer(op2);
                 }
                 operators.add(op);

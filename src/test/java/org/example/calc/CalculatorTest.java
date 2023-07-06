@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorTest {
-    static Calculator calc = Calculators.calculatorWithoutPrecedence();
+    static Calculator calc = Calculators.standardCalculator();
 
     private static Stream<Arguments> provideErrors() {
         return Stream.of(
@@ -22,7 +22,7 @@ class CalculatorTest {
         );
     }
 
-    private static Stream<Arguments> proviceCalculations() {
+    private static Stream<Arguments> provideCalculations() {
         return Stream.of(
                 Arguments.of("5+5", 10.0),
                 Arguments.of("42", 42),
@@ -39,8 +39,9 @@ class CalculatorTest {
                 Arguments.of("3*2*2", 12),
                 Arguments.of("4/2", 2),
                 Arguments.of("3/2", 1.5),
-                Arguments.of("3 + 2 * 5", 25),
-                Arguments.of("3 + 2 * 5", 25));
+                Arguments.of("3 + 2 * 5", 13),
+                Arguments.of("3 * 2 + 5", 11),
+                Arguments.of("1 + 2 * 3 + 4", 11));
     }
 
     @ParameterizedTest
@@ -51,7 +52,7 @@ class CalculatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("proviceCalculations")
+    @MethodSource("provideCalculations")
     void calculations(String input, double expected) {
         final Result<BigDecimal, String> result = calc.calculate(input);
         assertEquals(Result.success(expected), result.map(BigDecimal::doubleValue));

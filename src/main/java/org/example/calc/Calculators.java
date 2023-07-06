@@ -15,12 +15,6 @@ public class Calculators {
         return new Calculator(new Tokenizer(Tokens.getStandard(), Tokenizer.WHITESPACE, Tokenizer.POINT), new Transformer(), new StackCalc());
     }
 
-    /**
-     * Creates a calculator with normal operator precedence
-     * For example 1 + 2 * 3 = 9 instead of 7
-     *
-     * @return Calculator
-     */
     public static Calculator calculatorWithoutPrecedence() {
         return new Calculator(new Tokenizer(Tokens.getWithoutPrecedence(), Tokenizer.WHITESPACE, Tokenizer.POINT), new Transformer(), new StackCalc());
     }
